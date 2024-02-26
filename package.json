@@ -1,0 +1,16 @@
+{
+  "name": "simple-authentication",
+  "version": "1.0.0",
+  "description": "A simple user/password authentication service",
+  "author": "Maud Gautier",
+  "main": "src/index.ts",
+  "scripts": {},
+  "type": "module",
+  "devDependencies": {
+    "typescript": "^5.0.4"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com:MaudGautier/simple-authentication.git"
+  }
+}
