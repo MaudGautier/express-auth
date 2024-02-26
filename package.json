@@ -7,6 +7,7 @@
   "scripts": {},
   "type": "module",
   "devDependencies": {
+    "express": "^4.18.2",
     "typescript": "^5.0.4"
   },
   "repository": {
