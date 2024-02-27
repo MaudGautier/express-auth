@@ -1,9 +1,9 @@
 import express, {Request, Response} from 'express'
 import path from 'path';
 import argon2 from "argon2";
-import { nanoid } from 'nanoid'
-import { fileURLToPath } from 'url';
-import { renderFile } from 'ejs';
+import {nanoid} from 'nanoid'
+import {fileURLToPath} from 'url';
+import {renderFile} from 'ejs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,8 +24,12 @@ app.use('/static', express.static('public'))
 app.engine('html', renderFile);
 app.set('view engine', 'html');
 
-type UserCredentials = { name: string; password: string }
-type Users = Record<string, UserCredentials>
+type UserName = string
+type SessionId = string
+type UserCredentials = { name: UserName; password: string }
+type Users = Record<UserName, UserCredentials>
+type Session = { name: UserName; sessionId: SessionId }
+type Sessions = Record<SessionId, Session>
 
 // In-memory DB
 const DATABASE = {
@@ -35,9 +39,14 @@ const DATABASE = {
     getUser(id: string) {
         return DATABASE.users[id]
     },
-    setUser(id: string, password: UserCredentials) {
-        DATABASE.users[id] = password
-        return password
+    setUser(id: string, credentials: UserCredentials) {
+        DATABASE.users[id] = credentials
+        return credentials
+    },
+    session: {} as Sessions,
+    setSession(sessionId: SessionId, session: Session) {
+        DATABASE.session[sessionId] = session;
+        return session
     }
 }
 
@@ -53,6 +62,11 @@ app.post("/login", async (req: Request, res: Response) => {
     const passwordIsCorrect = user && await argon2.verify(user.password, req.body.password)
 
     if (passwordIsCorrect) {
+        const sessionId = nanoid()
+        const session: Session = {name: userId, sessionId: sessionId}
+        DATABASE.setSession(sessionId, session)
+        res.cookie('session', sessionId)
+
         res.redirect("/home")
     } else {
         res.json({"error": "Wrong username/password. Could not log in"})
@@ -70,16 +84,16 @@ app.get("/register", (_: Request, res: Response) => {
 
 app.post("/register", async (req: Request, res: Response) => {
     const userId = req.body.username
-    const credentials: UserCredentials = { name: req.body.username, password: await argon2.hash(req.body.password)}
+    const credentials: UserCredentials = {name: req.body.username, password: await argon2.hash(req.body.password)}
     DATABASE.setUser(userId, credentials)
     res.redirect("/login")
 })
 
 // ---- HOME ----
-app.get("/home", (_: Request, res: Response) => {
+app.get("/home", (req: Request, res: Response) => {
+    console.log(req.get("Cookie"))
     res.render("home")
-    }
-)
+})
 
 
 app.listen(port, () => console.log(`Running on port ${port}`))
