@@ -47,6 +47,12 @@ const DATABASE = {
     setSession(sessionId: SessionId, session: Session) {
         DATABASE.session[sessionId] = session;
         return session
+    },
+    getSession(sessionId: SessionId | undefined) {
+        if (!sessionId) {
+            return null
+        }
+        return DATABASE.session[sessionId]
     }
 }
 
@@ -89,10 +95,34 @@ app.post("/register", async (req: Request, res: Response) => {
     res.redirect("/login")
 })
 
+// Check if user is authenticated
+function isAuthenticated(req: Request) {
+    console.log(req.get("Cookie"))
+    const cookies = req.get("Cookie")
+    const sessionId = cookies?.split("session=")[1]
+    console.log("sessionId is", sessionId)
+
+    const session = DATABASE.getSession(sessionId)
+    if (!session) {
+        return false
+    }
+
+    const userName = session.name
+    const user = DATABASE.getUser(userName)
+
+    console.log("User", userName, "is authenticated !")
+
+    return true
+}
+
 // ---- HOME ----
 app.get("/home", (req: Request, res: Response) => {
-    console.log(req.get("Cookie"))
-    res.render("home")
+    if (isAuthenticated(req)) {
+        res.render("home")
+    } else {
+        console.log("Not authenticated !")
+        res.redirect("/login")
+    }
 })
 
 
