@@ -26,5 +26,6 @@
   "repository": {
     "type": "git",
     "url": "git+https://github.com:MaudGautier/simple-authentication.git"
-  }
+  },
+  "keywords": ["authentication", "scratch", "session_management", "cookie", "encryption"]
 }
