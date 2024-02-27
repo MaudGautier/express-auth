@@ -1,6 +1,12 @@
 import express, {Request, Response} from 'express'
 import path from 'path';
 import argon2 from "argon2";
+import { nanoid } from 'nanoid'
+import { fileURLToPath } from 'url';
+import { renderFile } from 'ejs';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express()
 const port = 5001
@@ -15,7 +21,7 @@ app.set('views', path.join(__dirname, '/../views'));
 app.use('/static', express.static('public'))
 
 // Set EJS as the view engine but use it to render .html files
-app.engine('html', require('ejs').renderFile);
+app.engine('html', renderFile);
 app.set('view engine', 'html');
 
 type UserCredentials = { name: string; password: string }
