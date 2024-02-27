@@ -23,7 +23,7 @@ type Users = Record<string, UserCredentials>
 // In-memory DB
 const DATABASE = {
     users: {
-        user1: {name: "user1", password: "password"}
+        // user1: {name: "user1", password: "password"}
     } as Users,
     getUser(id: string) {
         return DATABASE.users[id]
@@ -52,6 +52,18 @@ app.post("/login", (req: Request, res: Response) => {
 })
 
 app.get('/', (_: Request, res: Response) => {
+    res.redirect("/login")
+})
+
+// ---- REGISTER ----
+app.get("/register", (_: Request, res: Response) => {
+    res.render("register")
+})
+
+app.post("/register", (req: Request, res: Response) => {
+    const userId = req.body.username
+    const credentials: UserCredentials = { name: req.body.username, password: req.body.password}
+    DATABASE.setUser(userId, credentials)
     res.redirect("/login")
 })
 
