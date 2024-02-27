@@ -1,5 +1,6 @@
 import express, {Request, Response} from 'express'
 import path from 'path';
+import argon2 from "argon2";
 
 const app = express()
 const port = 5001
@@ -60,15 +61,15 @@ app.get("/register", (_: Request, res: Response) => {
     res.render("register")
 })
 
-app.post("/register", (req: Request, res: Response) => {
+app.post("/register", async (req: Request, res: Response) => {
     const userId = req.body.username
-    const credentials: UserCredentials = { name: req.body.username, password: req.body.password}
+    const credentials: UserCredentials = { name: req.body.username, password: await argon2.hash(req.body.password)}
     DATABASE.setUser(userId, credentials)
     res.redirect("/login")
 })
 
 // ---- HOME ----
-app.get("/home", (req, res: Response) => {
+app.get("/home", (_: Request, res: Response) => {
     res.render("home")
     }
 )
