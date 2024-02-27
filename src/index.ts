@@ -41,11 +41,12 @@ app.get("/login", (_: Request, res: Response) => {
     res.render("login")
 })
 
-app.post("/login", (req: Request, res: Response) => {
+app.post("/login", async (req: Request, res: Response) => {
     const userId = req.body.username
     const user = DATABASE.getUser(userId)
+    const passwordIsCorrect = user && await argon2.verify(user.password, req.body.password)
 
-    if (user && req.body.password === user.password) {
+    if (passwordIsCorrect) {
         res.redirect("/home")
     } else {
         res.json({"error": "Wrong username/password. Could not log in"})
