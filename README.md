@@ -2,7 +2,7 @@
 
 This is a basic user/password authentication app that was implemented for learning purposes.
 
-The idea for doing this comes from P.B. To, who live coded an equivalent app during a presentation she gave.
+The idea for doing this comes from p.b. hua, who live coded an equivalent app during a presentation she gave.
 I later re-implemented it on my own to make sure I had understood everything she talked about.
 So all the credits for this code goes to her!
 
